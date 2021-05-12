@@ -13,7 +13,9 @@ public class Game_of_life extends JFrame implements KeyListener {
     private JPanel Menu;
     private JPanel SceneManager = new JPanel(new CardLayout());
 
-    private int i = 0, j = 0, width = 700, height = 700, xCellNum = width/10, yCellNum = height/10;
+    private int CellWidth = 1, CellHeight = 1;
+    private int i = 0, j = 0, width = 1000, height = 700, xCellNum = width/CellWidth, yCellNum = height/CellHeight;
+
     private boolean pause = false;
     private Random rand = new Random();
     private boolean fileError;
@@ -61,7 +63,7 @@ public class Game_of_life extends JFrame implements KeyListener {
     public void generateRandomUniverse(){
         for(i=0;i<yCellNum;i++){
             for(j=0;j<xCellNum;j++){
-                Universo[i][j] = new Cell(i+j,Math.random()<0.1, 10, 10);
+                Universo[i][j] = new Cell(i+j,Math.random()<0.1, CellWidth, CellHeight);
             }
         }
         System.out.println("First time running, generation was random and input.txt was created.\nFrom now on, generation will follow input.txt as it's source");
@@ -101,9 +103,9 @@ public class Game_of_life extends JFrame implements KeyListener {
                 line = br.readLine();
                 for (j = 0; j < xCellNum; j++) {
                     if (line.charAt(j) == '0') {
-                        Universo[i][j] = new Cell(i+j, false, 10, 10);
+                        Universo[i][j] = new Cell(i+j, false, CellWidth, CellHeight);
                     } else {
-                        Universo[i][j] = new Cell(i+j, true, 10, 10);
+                        Universo[i][j] = new Cell(i+j, true, CellWidth, CellHeight);
                     }
                 }
             }
