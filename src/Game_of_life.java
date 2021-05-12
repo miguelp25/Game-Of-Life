@@ -66,7 +66,7 @@ public class Game_of_life extends JFrame implements KeyListener {
                 Universo[i][j] = new Cell(i+j,Math.random()<0.1, CellWidth, CellHeight);
             }
         }
-        System.out.println("First time running, generation was random and input.txt was created.\n");
+        System.out.println("First time running, generation has been random.\n");
         /*
         try {
             f.createNewFile();
