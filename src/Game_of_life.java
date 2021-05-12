@@ -1,16 +1,20 @@
 import java.awt.*;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.awt.event.KeyListener;
 import java.io.*;
 import java.util.Random;
+import java.awt.event.KeyEvent;
 
-public class Game_of_life extends JFrame {
+
+public class Game_of_life extends JFrame implements KeyListener {
     private JFrame frame;
     private DrawPanel drawPanel;
     private JPanel Menu;
     private JPanel SceneManager = new JPanel(new CardLayout());
 
     private int i = 0, j = 0, width = 700, height = 700, xCellNum = width/10, yCellNum = height/10;
+    private boolean pause = false;
     private Random rand = new Random();
     private boolean fileError;
     private Cell[][] Universo = new Cell[yCellNum][xCellNum];
@@ -23,6 +27,8 @@ public class Game_of_life extends JFrame {
     }
 
     public Game_of_life() {
+        super("Game of Life @Miguelp25");
+
         if(!f.exists()){
             generateRandomUniverse();
         }else{
@@ -31,21 +37,35 @@ public class Game_of_life extends JFrame {
 
         prepareGUI();
 
+        //////////////////////////
+        addKeyListener(this);
+
         System.out.println("!!!");
         changeScene("Game of life");
 
         while(true){
-            nextStatusCells();
-            UpdateCells();
-            updateGUI();
-            try{
-                Thread.sleep(1000/speed);
-            } catch (Exception exc){}
+            System.out.println(".");
+            if(!pause){
+                nextStatusCells();
+                UpdateCells();
+                updateGUI();
+                try{
+                    Thread.sleep(1000/speed);
+                } catch (Exception exc){}
+            }
         }
+
 
     }
 
     public void generateRandomUniverse(){
+        for(i=0;i<yCellNum;i++){
+            for(j=0;j<xCellNum;j++){
+                Universo[i][j] = new Cell(i+j,Math.random()<0.1, 10, 10);
+            }
+        }
+        System.out.println("First time running, generation was random and input.txt was created.\nFrom now on, generation will follow input.txt as it's source");
+        /*
         try {
             f.createNewFile();
             FileWriter fw = new FileWriter( f.getAbsoluteFile( ) );
@@ -57,6 +77,7 @@ public class Game_of_life extends JFrame {
                 bw.newLine();
             }
             bw.close();
+
             for(i=0;i<yCellNum;i++){
                 for(j=0;j<xCellNum;j++){
                     Universo[i][j] = new Cell(i+j,Math.random()<0.1, 10, 10);
@@ -67,6 +88,7 @@ public class Game_of_life extends JFrame {
         catch(IOException ioe) {
             ioe.printStackTrace();
         }
+        */
     }
 
     public void importUniverse(){
@@ -90,8 +112,8 @@ public class Game_of_life extends JFrame {
     }
 
     private void prepareGUI(){
-        frame = new JFrame("Game of Life @Miguelp25");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame = new JFrame("Game of Life @Miguelp25");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         drawPanel = new DrawPanel(xCellNum, yCellNum, Universo);
         Menu = new JPanel();
@@ -100,12 +122,13 @@ public class Game_of_life extends JFrame {
         SceneManager.add(Menu, "Menu");
         SceneManager.add(drawPanel, "Game of life");
 
-        frame.getContentPane().add(BorderLayout.CENTER, SceneManager);
+        this.getContentPane().add(BorderLayout.CENTER, SceneManager);
 
-        frame.setVisible(true);
-        frame.setResizable(false);
-        frame.setSize(width, height);
-        frame.setLocationRelativeTo(null);
+        this.setVisible(true);
+        this.setResizable(false);
+        this.setSize(width, height);
+        this.setLocationRelativeTo(null);
+        this.setFocusable(true);
     }
 
     public void changeScene(String name){
@@ -115,7 +138,7 @@ public class Game_of_life extends JFrame {
     }
 
     public void updateGUI(){
-        frame.repaint();
+        this.repaint();
     }
 
     public void nextStatusCells(){
@@ -162,5 +185,47 @@ public class Game_of_life extends JFrame {
             }
         }
         //updateGUI();
+    }
+
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode())
+        {
+            case KeyEvent.VK_PLUS :
+                if(e.isControlDown()) {
+                    if(speed <= 9) {
+                        System.out.println("Subiendo velocidad");
+                        if(pause){
+                            speed = 1;
+                            pause = false;
+                        }else{
+                            speed++;
+                        }
+                    }
+                }
+                break;
+            case KeyEvent.VK_MINUS :
+                if(e.isControlDown()) {
+                    if(speed >= 2) {
+                        System.out.println("Bajando velocidad");
+                        speed--;
+                    }else{
+                        pause = true;
+                    }
+                }
+                break;
+
+            case KeyEvent.VK_SPACE :
+                pause = !pause;
+                break;
+        }
+        System.out.println("Velocidad: " + speed + ", pause: " + pause);
+    }
+
+    public void keyReleased(KeyEvent e) {
+        System.out.println("keyTyped");
+    }
+
+    public void keyTyped(KeyEvent e) {
+        //System.out.println("keyTyped");
     }
 }
