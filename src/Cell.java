@@ -18,8 +18,8 @@ public class Cell {
         nextStatus = stat;
     }
 
-    public void update(boolean stat){
-        status = stat;
+    public void update(){
+        status = nextStatus;
     }
 
     public boolean getStatus(){
