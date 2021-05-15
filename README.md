@@ -6,8 +6,8 @@ A simple app in Java, that lets you interact with Conway's Game of Life
 
 ### **How to run it**
 There's two ways of running this app:
-* The simplest way is executing Game-Of-Life.exe
-* If you have java, you can run the static void main in Game_of_life.java 
+* The simplest way is executing ./out/artifacts/Game_of_life_jar/Game-Of-Life.jar
+* Running the static void main in Game_of_life.java
 
 
 <br/>
