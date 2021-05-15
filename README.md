@@ -20,6 +20,13 @@ There's two ways of running this app:
 <br/>
 <br/>
 
+##### `V1 Performance update`
+
+In V1 im trying to increase the app's performance. Right now in the default configuration the app is checking, updating and re-drawing 700.000 objects / second (even more depending of the speed).
+But I'm sure there's no need for updating all the universe, we could just check the alive cells and the cells surrounding them and maybe obtain a performance increase.
+<br/>
+<br/>
+
 ##### `V0 Base Code`
 
 In V0 im trying to make the Game of life basic logic and maybe a very simple Menu
