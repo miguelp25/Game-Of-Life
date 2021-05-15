@@ -29,7 +29,7 @@ But I'm sure there's no need for updating all the universe, we could just check 
 
 ##### `V0 Base Code` *(implemented)*
 
-In V0 im trying to make the Game of life basic logic and maybe a very simple Menu
+In V0 im trying to make the Game of life's basic logic and maybe a very simple Menu
 * With 'CTR +' you are able to increase the speed.
 * With 'CTR -' you are able to decrease and pause the speed.
 * With space key you are able to pause/unpause.
