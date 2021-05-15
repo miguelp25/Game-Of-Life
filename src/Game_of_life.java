@@ -18,11 +18,12 @@ public class Game_of_life extends JFrame implements KeyListener {
     private int i = 0, j = 0, width = 1000, height = 700, xCellNum = width/CellWidth, yCellNum = height/CellHeight;
 
     private boolean pause = false;
+    public static boolean isUniverseGenerated = false;
     private boolean fileError;
     private Cell[][] Universo = new Cell[yCellNum][xCellNum];
     private int speed = 1;
 
-    private File f = new File("./", "Input.txt");
+    //private File f = new File("./", "Input.txt");
 
     public static void main(String[] args) {
         new Game_of_life();
@@ -30,12 +31,6 @@ public class Game_of_life extends JFrame implements KeyListener {
 
     public Game_of_life() {
         super("Game of Life @Miguelp25");
-
-        if(!f.exists()){
-            generateRandomUniverse();
-        }else{
-            importUniverse();
-        }
 
         prepareGUI();
 
@@ -47,7 +42,7 @@ public class Game_of_life extends JFrame implements KeyListener {
         changeScene("Menu");
 
         while(true){
-            if(!pause){
+            if(!pause && isUniverseGenerated){
                 nextStatusCells();
                 UpdateCells();
                 updateGUI();
@@ -56,19 +51,23 @@ public class Game_of_life extends JFrame implements KeyListener {
                 } catch (Exception exc){}
             }else{
                 try{
-                    Thread.sleep(50);
+                    Thread.sleep(100);
                 } catch (Exception exc){}
             }
         }
     }
 
     public void generateRandomUniverse(){
+        isUniverseGenerated = false;
+
         for(i=0;i<yCellNum;i++){
             for(j=0;j<xCellNum;j++){
                 Universo[i][j] = new Cell(i+j,Math.random()<0.1, CellWidth, CellHeight);
             }
         }
         System.out.println("First time running, generation has been random.\n");
+
+        isUniverseGenerated = true;
         /*
         try {
             f.createNewFile();
@@ -93,6 +92,8 @@ public class Game_of_life extends JFrame implements KeyListener {
             ioe.printStackTrace();
         }
         */
+
+
     }
 
     public void importUniverse(){
@@ -116,14 +117,12 @@ public class Game_of_life extends JFrame implements KeyListener {
     }
 
     private void prepareGUI(){
-        //frame = new JFrame("Game of Life @Miguelp25");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         drawPanel = new DrawPanel(xCellNum, yCellNum, Universo);
 
         prepareMenuGUI();
 
-        //SceneManager.add(drawPanel, "Game of life");
         SceneManager.add(Menu, "Menu");
         SceneManager.add(drawPanel, "Game of life");
 
@@ -169,9 +168,20 @@ public class Game_of_life extends JFrame implements KeyListener {
             buttonsPanel.add(buttons[i], gbc);
         }
 
+        buttons[0].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("isUniverseGenerated " + isUniverseGenerated);
+                if(isUniverseGenerated){
+                    changeScene("Game of life");
+                }
+            }
+        });
+
         buttons[1].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                generateRandomUniverse();
                 changeScene("Game of life");
+                pause = false;
             }
         });
 
@@ -268,6 +278,7 @@ public class Game_of_life extends JFrame implements KeyListener {
 
             case KeyEvent.VK_ESCAPE :
                 pause = true;
+                Menu.updateUI();
                 changeScene("Menu");
                 break;
         }

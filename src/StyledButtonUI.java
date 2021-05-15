@@ -24,6 +24,17 @@ class StyledButtonUI extends BasicButtonUI {
         Dimension size = c.getSize();
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        JButton b = (JButton) c;
+
+        if(b.getText() == "Continue"){
+            if(Game_of_life.isUniverseGenerated){
+                c.setBackground(Color.decode("0x8802FF"));
+            }else{
+                c.setBackground(Color.decode("0x939393"));
+            }
+        }
+
         g.setColor(c.getBackground().darker());
         g.fillRoundRect(0, yOffset, size.width, size.height - yOffset, 10, 10);
         g.setColor(c.getBackground());
