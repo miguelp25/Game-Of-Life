@@ -1,0 +1,4 @@
+.env
+TODO.txt
+*.txt
+.idea/*

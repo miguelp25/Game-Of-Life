@@ -23,7 +23,7 @@ class DrawPanel extends JPanel {
                     g.setColor(Color.BLACK); //Dead
                 }
                 g.fillRect(Universo[i][j].getXDimension()*j,Universo[i][j].getYDimension()*i,10,10);
-                g.fillRect(Universo[i][j].getXDimension()*j,Universo[i][j].getYDimension()*i,10,10);
+                //g.fillRect(Universo[i][j].getXDimension()*j,Universo[i][j].getYDimension()*i,10,10);
             }
         }
     }

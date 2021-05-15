@@ -6,8 +6,8 @@ A simple app in Java, that lets you interact with Conway's Game of Life
 
 ### **How to run it**
 There's two ways of running this app:
-* The simplest way is executing Game-Of-Life.exe
-* If you have java, you can run the static void main in Game_of_life.java 
+* The simplest way is executing ./out/artifacts/Game_of_life_jar/Game-Of-Life.jar
+* Running the static void main in Game_of_life.java
 
 
 <br/>
@@ -26,3 +26,4 @@ In V0 im trying to make the Game of life basic logic and maybe a very simple Men
 * With 'CTR +' you are able to increase the speed.
 * With 'CTR -' you are able to decrease and pause the speed.
 * With space key you are able to pause/unpause.
+* With escape key you are able to return to the main menu.
