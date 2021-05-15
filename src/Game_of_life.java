@@ -1,23 +1,23 @@
 import java.awt.*;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.io.*;
 import java.util.Random;
 import java.awt.event.KeyEvent;
 
-
 public class Game_of_life extends JFrame implements KeyListener {
-    private JFrame frame;
+
     private DrawPanel drawPanel;
     private JPanel Menu;
     private JPanel SceneManager = new JPanel(new CardLayout());
 
-    private int CellWidth = 1, CellHeight = 1;
+    private final int CellWidth = 1, CellHeight = 1;
     private int i = 0, j = 0, width = 1000, height = 700, xCellNum = width/CellWidth, yCellNum = height/CellHeight;
 
     private boolean pause = false;
-    private Random rand = new Random();
     private boolean fileError;
     private Cell[][] Universo = new Cell[yCellNum][xCellNum];
     private int speed = 1;
@@ -43,10 +43,10 @@ public class Game_of_life extends JFrame implements KeyListener {
         addKeyListener(this);
 
         System.out.println("!!!");
-        changeScene("Game of life");
+        //changeScene("Game of life");
+        changeScene("Menu");
 
         while(true){
-            System.out.println(".");
             if(!pause){
                 nextStatusCells();
                 UpdateCells();
@@ -54,10 +54,12 @@ public class Game_of_life extends JFrame implements KeyListener {
                 try{
                     Thread.sleep(1000/speed);
                 } catch (Exception exc){}
+            }else{
+                try{
+                    Thread.sleep(50);
+                } catch (Exception exc){}
             }
         }
-
-
     }
 
     public void generateRandomUniverse(){
@@ -118,7 +120,8 @@ public class Game_of_life extends JFrame implements KeyListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         drawPanel = new DrawPanel(xCellNum, yCellNum, Universo);
-        Menu = new JPanel();
+
+        prepareMenuGUI();
 
         //SceneManager.add(drawPanel, "Game of life");
         SceneManager.add(Menu, "Menu");
@@ -131,6 +134,49 @@ public class Game_of_life extends JFrame implements KeyListener {
         this.setSize(width, height);
         this.setLocationRelativeTo(null);
         this.setFocusable(true);
+    }
+
+    private void prepareMenuGUI(){
+        // Credit to https://stackoverflow.com/questions/42964669/placing-button-panel-in-center-java-swing
+
+        Menu = new JPanel();
+        Menu.setBorder(new EmptyBorder(10, 10, 10, 10));
+        Menu.setLayout(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.anchor = GridBagConstraints.NORTH;
+
+        JLabel jlabel = new JLabel("Game of life");
+        jlabel.setFont(new Font("Verdana",1,20));
+        Menu.add(jlabel, gbc);
+
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JPanel buttonsPanel = new JPanel(new GridBagLayout());
+
+        String[] buttonTitles = {"Continue", "New Universe", "Import", "Tutorial", "Languages"};
+        Boolean[] available = {false, true, false, false, false};
+        JButton[] buttons = new JButton[5];
+
+        for(int i = 0; i < buttonTitles.length; i++){
+            buttons[i] = new JButton(buttonTitles[i]);
+            buttons[i].setFont(new Font("Calibri", Font.PLAIN, 14));
+            buttons[i].setBackground(new Color(available[i]? 0x8802FF : 0x939393));
+            buttons[i].setForeground(Color.white);
+            buttons[i].setUI(new StyledButtonUI());
+            buttonsPanel.add(buttons[i], gbc);
+        }
+
+        buttons[1].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                changeScene("Game of life");
+            }
+        });
+
+        gbc.weighty = 1;
+        Menu.add(buttonsPanel, gbc);
     }
 
     public void changeScene(String name){
@@ -219,7 +265,13 @@ public class Game_of_life extends JFrame implements KeyListener {
             case KeyEvent.VK_SPACE :
                 pause = !pause;
                 break;
+
+            case KeyEvent.VK_ESCAPE :
+                pause = true;
+                changeScene("Menu");
+                break;
         }
+
         System.out.println("Velocidad: " + speed + ", pause: " + pause);
     }
 
