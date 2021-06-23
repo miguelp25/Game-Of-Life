@@ -279,11 +279,13 @@ public class Game_of_life extends JFrame implements KeyListener {
             }
         }
 
+        /*
         for(int i = 0; i < Cell.changedList.size(); i++){
             Cell CelltoUpdate = Cell.changedList.get(i);
 
             CelltoUpdate.update();
         }
+        */
     }
 
     public void keyPressed(KeyEvent e) {
