@@ -20,10 +20,28 @@ There's two ways of running this app:
 <br/>
 <br/>
 
-##### `V1 Performance update`
+##### `V2 Custom Mode`
 
-In V1 im trying to increase the app's performance. Right now in the default configuration the app is checking, updating and re-drawing 700.000 objects / second (even more depending on the speed).
-But I'm sure there's no need for updating all the universe, we could just check the alive cells and the cells surrounding them and maybe obtain a performance increase.
+In V2 I would like to have a user-friendly way of choosing dimensions and cell numbers. Also, I would like to implement a way of choosing between "random" mode and "pre-made" mode (like levels) and have many awasome levels to choose from.
+
+<br/>
+<br/>
+
+##### `V1 Performance update` *(implemented)*
+
+In V1 im trying to increase the app's performance. Right now in the default configuration the app is checking many millions of objects, and updating and re-drawing 700.000 objects / second (even more depending on the speed).
+****************
+I have changed the drawing method. Instead of drawing every alive cell and dead cell (700.000 cells in total), we only draw the alive ones in a black background (between 20.000 and 40.000 cells). (Yes, I know, how stupid am I?)
+<br/>
+Also, instead of checking the neighbours of every single cell (700.000 * 9 = 6.300.000), we check only the neighbors of the alive cells and its neighbors (40.000 * 9 * 9 = 3.240.000). Theoretically, if we have more than 80.000 alive cells we will start losing performance, but this is much better if we are planning pre-made, more elegant scenarios (like I do).
+
+Yes, I am sure there's many ways to continue increasing the performance, like not checking previously checked cells, avoiding updating every single cell each iteration (700.000 cells) or only re-drawing cells that change it's status, but right now there's no such a performance problem as previously.
+
+Finally, I've added a very very simple developer mode:
+* With 'CTR I' you are able to display developer info.
+
+![image](https://user-images.githubusercontent.com/30934149/123147441-56e8a180-d45f-11eb-951f-20ae9c3177f6.png)
+
 <br/>
 <br/>
 

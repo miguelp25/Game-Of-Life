@@ -14,14 +14,18 @@ public class Game_of_life extends JFrame implements KeyListener {
     private JPanel Menu;
     private JPanel SceneManager = new JPanel(new CardLayout());
 
-    private final int CellWidth = 1, CellHeight = 1;
-    private int i = 0, j = 0, width = 1000, height = 700, xCellNum = width/CellWidth, yCellNum = height/CellHeight;
+    public static int CellWidth = 1, CellHeight = 1;
+    public static int width = 1000, height = 700, xCellNum = width/CellWidth, yCellNum = height/CellHeight;
 
     private boolean pause = false;
     public static boolean isUniverseGenerated = false;
     private boolean fileError;
     private Cell[][] Universo = new Cell[yCellNum][xCellNum];
     private int speed = 1;
+
+    //Every time there's a iteration Jpanel is re-drawn.
+    public static long fps = 0;
+    public static boolean developerMode = false;
 
     //private File f = new File("./", "Input.txt");
 
@@ -43,12 +47,18 @@ public class Game_of_life extends JFrame implements KeyListener {
 
         while(true){
             if(!pause && isUniverseGenerated){
+                long startTime = System.nanoTime();
                 nextStatusCells();
+                Cell.resetAliveList();
                 UpdateCells();
                 updateGUI();
+                Cell.resetChangedList();
+
+                //System.out.println("That took " + (endTime - startTime) + " nanoseconds");
                 try{
                     Thread.sleep(1000/speed);
                 } catch (Exception exc){}
+                fps = Math.round(1000000000.0 / (System.nanoTime() - startTime));
             }else{
                 try{
                     Thread.sleep(100);
@@ -60,9 +70,9 @@ public class Game_of_life extends JFrame implements KeyListener {
     public void generateRandomUniverse(){
         isUniverseGenerated = false;
 
-        for(i=0;i<yCellNum;i++){
-            for(j=0;j<xCellNum;j++){
-                Universo[i][j] = new Cell(i+j,Math.random()<0.1, CellWidth, CellHeight);
+        for(int i=0;i<yCellNum;i++){
+            for(int j=0;j<xCellNum;j++){
+                Universo[i][j] = new Cell(i+j,Math.random()<0.1, CellWidth, CellHeight, j, i);
             }
         }
         System.out.println("First time running, generation has been random.\n");
@@ -100,15 +110,15 @@ public class Game_of_life extends JFrame implements KeyListener {
         try(BufferedReader br = new BufferedReader(new FileReader("input.txt"))) {
             StringBuilder sb = new StringBuilder();
             String line;
-            for(i=0;i<yCellNum;i++) {
+            for(int i=0;i<yCellNum;i++) {
                 //sb.append(line);
                 //sb.append(System.lineSeparator());
                 line = br.readLine();
-                for (j = 0; j < xCellNum; j++) {
+                for (int j = 0; j < xCellNum; j++) {
                     if (line.charAt(j) == '0') {
-                        Universo[i][j] = new Cell(i+j, false, CellWidth, CellHeight);
+                        Universo[i][j] = new Cell(i+j, false, CellWidth, CellHeight, j, i);
                     } else {
-                        Universo[i][j] = new Cell(i+j, true, CellWidth, CellHeight);
+                        Universo[i][j] = new Cell(i+j, true, CellWidth, CellHeight, j, i);
                     }
                 }
             }
@@ -200,21 +210,45 @@ public class Game_of_life extends JFrame implements KeyListener {
     }
 
     public void nextStatusCells(){
-        for(i=0;i<yCellNum;i++){
-            for(j=0;j<xCellNum;j++){
-                if(Universo[i][j].getStatus() && CheckNeighbors(Universo, i, j) < 2){
-                    Universo[i][j].setNextStatus(false); //Cell dies because of lack of neighbors
-                }
+        for(int i = 0; i < Cell.aliveList.size(); i++){
+            Cell aliveCell = Cell.aliveList.get(i);
 
-                if(Universo[i][j].getStatus() && CheckNeighbors(Universo, i, j) == 2 || CheckNeighbors(Universo, i, j) == 3){
-                    Universo[i][j].setNextStatus(true);//Alive Cell continues being alive
-                }
+            for(int k=-1;k<2;k++) {
+                for (int l = -1; l < 2; l++) {
+                    if(aliveCell.position_y+k >= 0 && aliveCell.position_y+k < yCellNum && aliveCell.position_x+l >= 0 && aliveCell.position_x+l < xCellNum) {
+                        int CheckingCell_y = aliveCell.position_y + k;
+                        int CheckingCell_x = aliveCell.position_x + l;
 
-                if(Universo[i][j].getStatus() && CheckNeighbors(Universo, i, j) > 3){
-                    Universo[i][j].setNextStatus(false); // Cell dies because of overpopulation
-                }
-                if(!Universo[i][j].getStatus() && CheckNeighbors(Universo, i, j) == 3){
-                    Universo[i][j].setNextStatus(true); //Cell revives because of reproduction
+                        int neighbors = CheckNeighbors(Universo, CheckingCell_y, CheckingCell_x);
+
+                        if (Universo[CheckingCell_y][CheckingCell_x].getStatus() && neighbors < 2) {
+                            //Rezo por que esto evite duplicados siempre
+                            if(Universo[CheckingCell_y][CheckingCell_x].getNextStatus()){
+                                Cell.changedList.add(Universo[CheckingCell_y][CheckingCell_x]);
+                            }
+                            Universo[CheckingCell_y][CheckingCell_x].setNextStatus(false); //Cell dies because of lack of neighbors
+                        }
+
+                        if (Universo[CheckingCell_y][CheckingCell_x].getStatus() && neighbors == 2 || neighbors == 3) {
+                            if(!Universo[CheckingCell_y][CheckingCell_x].getNextStatus()){
+                                Cell.changedList.add(Universo[CheckingCell_y][CheckingCell_x]);
+                            }
+                            Universo[CheckingCell_y][CheckingCell_x].setNextStatus(true);//Alive Cell continues being alive
+                        }
+
+                        if (Universo[CheckingCell_y][CheckingCell_x].getStatus() && neighbors > 3) {
+                            if(Universo[CheckingCell_y][CheckingCell_x].getNextStatus()){
+                                Cell.changedList.add(Universo[CheckingCell_y][CheckingCell_x]);
+                            }
+                            Universo[CheckingCell_y][CheckingCell_x].setNextStatus(false); // Cell dies because of overpopulation
+                        }
+                        if (!Universo[CheckingCell_y][CheckingCell_x].getStatus() && neighbors == 3) {
+                            if(!Universo[CheckingCell_y][CheckingCell_x].getNextStatus()){
+                                Cell.changedList.add(Universo[CheckingCell_y][CheckingCell_x]);
+                            }
+                            Universo[CheckingCell_y][CheckingCell_x].setNextStatus(true); //Cell revives because of reproduction
+                        }
+                    }
                 }
             }
         }
@@ -237,12 +271,19 @@ public class Game_of_life extends JFrame implements KeyListener {
     }
 
     public void UpdateCells(){
-        for(i=0;i<yCellNum;i++) {
-            for (j = 0; j < xCellNum; j++) {
+        //maybe we could squish a bit of performance here.
+        //maybe next time :)
+        for(int i = 0; i < Universo.length; i++){
+            for(int j = 0; j < Universo[0].length; j++){
                 Universo[i][j].update();
             }
         }
-        //updateGUI();
+
+        for(int i = 0; i < Cell.changedList.size(); i++){
+            Cell CelltoUpdate = Cell.changedList.get(i);
+
+            CelltoUpdate.update();
+        }
     }
 
     public void keyPressed(KeyEvent e) {
@@ -250,25 +291,31 @@ public class Game_of_life extends JFrame implements KeyListener {
         {
             case KeyEvent.VK_PLUS :
                 if(e.isControlDown()) {
-                    if(speed <= 9) {
+                    if(speed <= 128) {
                         System.out.println("Subiendo velocidad");
                         if(pause){
                             speed = 1;
                             pause = false;
                         }else{
-                            speed++;
+                            speed *= 2;
                         }
                     }
                 }
                 break;
-            case KeyEvent.VK_MINUS :
+            case KeyEvent.VK_MINUS:
                 if(e.isControlDown()) {
                     if(speed >= 2) {
                         System.out.println("Bajando velocidad");
-                        speed--;
+                        speed *= 0.5;
                     }else{
                         pause = true;
                     }
+                }
+                break;
+
+            case KeyEvent.VK_I:
+                if(e.isControlDown()) {
+                    developerMode = !developerMode;
                 }
                 break;
 
