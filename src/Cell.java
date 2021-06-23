@@ -1,17 +1,33 @@
+import java.util.ArrayList;
+
 public class Cell {
-    private static int count;
+    public static ArrayList<Cell> aliveList = new ArrayList<>();
+    public static ArrayList<Cell> changedList = new ArrayList<>();
     private int id;
     private boolean status; //Is alive?
     private int[] dimensions = new int[2];
+    public int position_x;
+    public int position_y;
     private boolean nextStatus; //Is it going to live?
 
-    public Cell(int ID, boolean life, int width, int height){
+    public Cell(int ID, boolean life, int width, int height, int position_x, int position_y){
         id = ID;
         status = life;
         dimensions[0] = width;
         dimensions[1] = height;
         nextStatus = false;
-        count++;
+        this.position_x = position_x;
+        this.position_y = position_y;
+
+        if(life) aliveList.add(this);
+    }
+
+    public static void resetAliveList(){
+        aliveList = new ArrayList<>();
+    }
+
+    public static void resetChangedList(){
+        changedList = new ArrayList<>();
     }
 
     public void setNextStatus(boolean stat){
@@ -19,6 +35,10 @@ public class Cell {
     }
 
     public void update(){
+        if(nextStatus){
+            aliveList.add(this);
+        }
+
         status = nextStatus;
     }
 
@@ -44,6 +64,7 @@ public class Cell {
                 "-------------------------------\n" +
                 "ID: " + id + "\n" +
                 "Status: " + status + "\n" +
+                "position: [" + position_x + ", " + position_y + "] \n" +
                 "dimensions: [" + dimensions[0] + ", " + dimensions[1] + "] \n\n");
     }
 }
