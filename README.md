@@ -13,7 +13,6 @@ There's two ways of running this app:
 <br/>
 
 ### **Pre-View of the app:**
-![image](https://user-images.githubusercontent.com/30934149/118011248-1a019900-b350-11eb-87f6-32a761a132da.png)
 ![image](https://user-images.githubusercontent.com/30934149/118014980-1112c680-b354-11eb-9601-527b0803979f.png)
 
 <br/>
